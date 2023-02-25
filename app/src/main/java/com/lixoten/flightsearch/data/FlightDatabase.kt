@@ -7,8 +7,6 @@ import androidx.room.RoomDatabase
 import com.lixoten.flightsearch.model.Airport
 import com.lixoten.flightsearch.model.Favorite
 
-
-//@Database(entities = arrayOf(Flight::class), version = 1)
 @Database(entities = [Airport::class, Favorite::class], version = 1, exportSchema = false)
 abstract class FlightDatabase: RoomDatabase() {
 
@@ -38,5 +36,4 @@ abstract class FlightDatabase: RoomDatabase() {
             }
         }
     }
-
 }

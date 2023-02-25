@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lixoten.flightsearch.FlightApplication
 import com.lixoten.flightsearch.data.FlightRepository
+import com.lixoten.flightsearch.data.UserPreferencesRepository
 import com.lixoten.flightsearch.model.Airport
 import com.lixoten.flightsearch.model.Favorite
 import kotlinx.coroutines.Job
@@ -15,8 +16,10 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    val flightRepository: FlightRepository
-) : ViewModel() {
+    val flightRepository: FlightRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
+
+    ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -35,7 +38,12 @@ class SearchViewModel(
 
     init {
         viewModelScope.launch {
-            processSearchQueryFlow(uiState.value.searchQuery)
+            userPreferencesRepository.userPreferencesFlow.collect {
+//                _uiState.value = uiState.value.copy(
+//                    searchQuery = it.searchValue,
+//                )
+                processSearchQueryFlow(it.searchValue)
+            }
         }
     }
 
@@ -83,6 +91,7 @@ class SearchViewModel(
                 searchQuery = searchQuery,
             )
         }
+        updatePreferenceSearchValue(searchQuery)
     }
 
     fun updateSelectedCode(selectedCode: String) {
@@ -126,6 +135,13 @@ class SearchViewModel(
 //        )
 //    }
 
+    fun updatePreferenceSearchValue(newValue: String) {
+        viewModelScope.launch {
+            userPreferencesRepository.updateUserPreferences(searchValue = newValue)
+        }
+    }
+
+
     // Notes: Question: At moment this is chuck of code is repeated in two files
     //  in QueryViewModel and in DetailsViewModel.
     //  what can I do/ place it so as not to have repeat code? I tried but I got a bunch of errors
@@ -138,7 +154,11 @@ class SearchViewModel(
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as FlightApplication)
                 val flightRepository = application.container.flightRepository
-                SearchViewModel(flightRepository = flightRepository)
+                val preferencesRepository = application.userPreferencesRepository
+                SearchViewModel(
+                    flightRepository = flightRepository,
+                    userPreferencesRepository = preferencesRepository
+                )
             }
         }
     }

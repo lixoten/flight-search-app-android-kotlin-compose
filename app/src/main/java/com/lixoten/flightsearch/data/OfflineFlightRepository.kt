@@ -14,9 +14,6 @@ class OfflineFlightRepository(private val airportDao: FlightDao) : FlightReposit
     override fun getAirportByCodeFlow(code: String): Flow<Airport> {
         return airportDao.getAirportByCodeFlow(code)
     }
-
-
-
     override suspend fun getAllAirports(): List<Airport> {
         return airportDao.getAllAirports()
     }
@@ -39,20 +36,6 @@ class OfflineFlightRepository(private val airportDao: FlightDao) : FlightReposit
     override suspend fun getAllFavoritesFlights(): List<Favorite> {
         return airportDao.getAllFavorites()
     }
-
-
-//    override fun getAllAirportsStream(): Flow<List<Airport>> {
-//        return airportDao.getAllAirports()
-//    }
-//..    override fun getAllAirportsStream(query: String): Flow<List<Airport>> {
-//..        return airportDao.getAllAirports(query)
-//..    }
-//    override fun getAirportByCodeStream(code: String): Flow<Airport> {
-//        return airportDao.getAirportByCode(code)
-//    }
-
-
-
     override suspend fun deleteFavoriteFlight(flight: Favorite) {
         return airportDao.deleteFavoriteFlight(flight)
     }
@@ -62,15 +45,5 @@ class OfflineFlightRepository(private val airportDao: FlightDao) : FlightReposit
         return airportDao.getSingleFavorite(departureCode, destinationCode)
     }
 
-    //override suspend fun insertFavoriteFlight(flight: Favorite) {
-    //    return airportDao.insertFavoriteFlight(flight)
-    //}
     override suspend fun insertFavoriteFlight(flight: Favorite) = airportDao.insertFavoriteFlight(flight)
-
-
-    //
-    //override suspend fun getAirports(): List<Airport> {
-    //    return airportDao.getAirports()
-    //}
-    //
 }
